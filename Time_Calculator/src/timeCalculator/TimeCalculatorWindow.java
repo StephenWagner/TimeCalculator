@@ -8,8 +8,9 @@ import java.awt.Graphics;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Time;
 
-public class TimeCalculator extends Applet implements ActionListener {
+public class TimeCalculatorWindow extends Applet implements ActionListener {
     /**
      * auto-generated
      */
@@ -17,13 +18,14 @@ public class TimeCalculator extends Applet implements ActionListener {
 
     // global variables
     private Label beginTimeLabel, endTimeLabel, timeElapsedLabel, enterTimeLabel, totalTimeLabel;
-    private TimeOfTheDay beginTime = new TimeOfTheDay();
-    private TimeOfTheDay endTime = new TimeOfTheDay();
+    private Time beginTime = new Time(0);
+    private Time endTime = new Time(0);
     private TimeSW totalHours = new TimeSW();
     private TimeSW timeElapsedHours = new TimeSW();
     private TimeSW enterTimeHours = new TimeSW();
     private Choice hours1, hours2, hours3, minutes1, minutes2, minutes3, meridian1, meridian2;
     private Button computeTimeButton, addElapsedButton, addEnteredButton, clearButton;
+    private TimeCalculator calc;
 
     public void init() {
 
@@ -84,6 +86,7 @@ public class TimeCalculator extends Applet implements ActionListener {
 	add(computeTimeButton);
 	timeElapsedLabel = new Label("Elapsed time: " + timeElapsedHours);
 	add(timeElapsedLabel);
+	// timeElapsedLabel.setLocation(x, y);
 
 	// add elapsed to total button
 	addElapsedButton = new Button("Add Elapsed to Total");
@@ -106,6 +109,9 @@ public class TimeCalculator extends Applet implements ActionListener {
 	clearButton.addActionListener(this);
 	add(clearButton);
 
+	resize(450, 250);
+
+	calc = new TimeCalculator();
     }
 
     // defining actionPerformed
@@ -115,6 +121,8 @@ public class TimeCalculator extends Applet implements ActionListener {
 	if (source == computeTimeButton) {
 	    int hr1, hr2;
 	    Boolean pm1, pm2;
+	    String time1;
+	    String time2;
 
 	    hr1 = Integer.parseInt(hours1.getSelectedItem());
 	    hr2 = Integer.parseInt(hours2.getSelectedItem());
@@ -137,23 +145,24 @@ public class TimeCalculator extends Applet implements ActionListener {
 	    else if (!pm2 && hr2 == 12)
 		hr2 = 0;
 
-	    beginTime.setHours(hr1);
-	    beginTime.setMinutes(Integer.parseInt(minutes1.getSelectedItem()));
-	    endTime.setHours(hr2);
-	    endTime.setMinutes(Integer.parseInt(minutes2.getSelectedItem()));
+	    time1 = hr1 + ":" + minutes1.getSelectedItem() + ":00";
+	    time2 = hr2 + ":" + minutes2.getSelectedItem() + ":00";
 
-	    timeElapsedHours = timePassed(beginTime, endTime);
+	    beginTime = Time.valueOf(time1);
+	    endTime = Time.valueOf(time2);
+
+	    timeElapsedHours = calc.timePassed(beginTime, endTime);
 
 	}
 
 	if (source == addElapsedButton) {
-	    totalHours = addTime(timeElapsedHours, totalHours);
+	    totalHours = calc.addTime(timeElapsedHours, totalHours);
 	}
 
 	if (source == addEnteredButton) {
 	    enterTimeHours.setHours(Integer.parseInt(hours3.getSelectedItem()));
 	    enterTimeHours.setMinutes(Integer.parseInt(minutes3.getSelectedItem()));
-	    totalHours = addTime(enterTimeHours, totalHours);
+	    totalHours = calc.addTime(enterTimeHours, totalHours);
 	}
 
 	if (source == clearButton) {
@@ -169,32 +178,4 @@ public class TimeCalculator extends Applet implements ActionListener {
 	totalTimeLabel.setText("Total time: " + totalHours);
     }
 
-    // Finds the amount of time passed
-    public TimeSW timePassed(TimeSW beginTime, TimeSW endTime) {
-	TimeSW resultTime;
-
-	int totalSeconds = endTime.getTotalSeconds() - beginTime.getTotalSeconds();
-
-	resultTime = new TimeSW(totalSeconds);
-
-	return resultTime;
-    }
-
-    // adds two amounts of time
-    public TimeSW addTime(TimeSW firstTime, TimeSW secondTime) {
-	TimeSW resultTime;
-
-	int totalSeconds = secondTime.getTotalSeconds() + firstTime.getTotalSeconds();
-
-	resultTime = new TimeSW(totalSeconds);
-	return resultTime;
-    }
-
-    public TimeSW subtractTime(TimeSW time, TimeSW timeToSubract){
-	TimeSW resultTime;
-	int totalSeconds = time.getTotalSeconds() - timeToSubract.getTotalSeconds();
-	
-	resultTime = new TimeSW(totalSeconds);
-	return resultTime;
-    }
 }

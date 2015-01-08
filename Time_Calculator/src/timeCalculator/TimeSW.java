@@ -23,6 +23,10 @@ public class TimeSW {
 	min = minutes;
 	sec = seconds;
     }
+    
+    public TimeSW(long totalMilliseconds){
+	this.setTimeWithMilliseconds(totalMilliseconds);
+    }
 
     /**
      * Use this constructor when you have the total time exclusively in seconds. Used to help in math operations.
@@ -31,7 +35,7 @@ public class TimeSW {
      *            All of the time as represented in seconds.
      */
     public TimeSW(int totalSeconds) {
-	this.setHoursWithTotalSeconds(totalSeconds);
+	this.setTimeWithTotalSeconds(totalSeconds);
     }
 
     public int getHours() {
@@ -64,12 +68,21 @@ public class TimeSW {
 	return String.format(format, hour) + ":" + String.format(format, min) + ":" + String.format(format, sec);
     }
 
-    public void setHoursWithTotalSeconds(int totalSeconds) {
+    public void setTimeWithTotalSeconds(int totalSeconds) {
 	int remainder;
 	hour = totalSeconds / 3600;
 	remainder = totalSeconds % 3600;
 	min = remainder / 60;
 	sec = remainder % 60;
+    }
+    
+    public void setTimeWithMilliseconds(long milliSeconds){
+	int totalSeconds;
+	
+	milliSeconds = milliSeconds/1000;
+	totalSeconds = (int)milliSeconds;
+	
+	setTimeWithTotalSeconds(totalSeconds);
     }
 
     public void clear() {
