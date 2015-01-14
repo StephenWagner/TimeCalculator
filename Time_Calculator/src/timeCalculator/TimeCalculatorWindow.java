@@ -3,9 +3,10 @@ package timeCalculator;
 import java.applet.Applet;
 import java.awt.Button;
 import java.awt.Choice;
-import java.awt.FlowLayout;
+//import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Label;
+import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Time;
@@ -26,10 +27,12 @@ public class TimeCalculatorWindow extends Applet implements ActionListener {
     private Choice hours1, hours2, hours3, minutes1, minutes2, minutes3, meridian1, meridian2;
     private Button computeTimeButton, addElapsedButton, addEnteredButton, clearButton;
     private TimeCalculator calc;
+    private Panel p1, p2, p3, p4, p5, p6, p7;
+    private StringBuffer totalListed = new StringBuffer();
 
     public void init() {
 
-	setLayout(new FlowLayout(FlowLayout.LEFT));
+	// setLayout(new FlowLayout(FlowLayout.LEFT));
 	String format = "%02d";
 
 	// create the hours Choices and add the items
@@ -66,48 +69,62 @@ public class TimeCalculatorWindow extends Applet implements ActionListener {
 
 	// add all items to the applet
 
+	p1 = new Panel();
+
 	// select begin time and dropdowns
 	beginTimeLabel = new Label("Select begin time:");
-	add(beginTimeLabel);
-	add(hours1);
-	add(minutes1);
-	add(meridian1);
+	p1.add(beginTimeLabel);
+	p1.add(hours1);
+	p1.add(minutes1);
+	p1.add(meridian1);
+	add(p1, LEFT_ALIGNMENT);
 
+	p2 = new Panel();
 	// select end time and dropdowns
 	endTimeLabel = new Label("Select end time:");
-	add(endTimeLabel);
-	add(hours2);
-	add(minutes2);
-	add(meridian2);
+	p2.add(endTimeLabel);
+	p2.add(hours2);
+	p2.add(minutes2);
+	p2.add(meridian2);
+	add(p2, LEFT_ALIGNMENT);
 
+	p3 = new Panel();
 	// compute time passed button and elapsed time label
 	computeTimeButton = new Button("Compute Time Passed");
 	computeTimeButton.addActionListener(this);
-	add(computeTimeButton);
+	p3.add(computeTimeButton, CENTER_ALIGNMENT);
 	timeElapsedLabel = new Label("Elapsed time: " + timeElapsedHours);
-	add(timeElapsedLabel);
-	// timeElapsedLabel.setLocation(x, y);
+	p3.add(timeElapsedLabel, CENTER_ALIGNMENT);
+	add(p3, CENTER_ALIGNMENT);
 
+	p4 = new Panel();
 	// add elapsed to total button
 	addElapsedButton = new Button("Add Elapsed to Total");
 	addElapsedButton.addActionListener(this);
-	add(addElapsedButton);
+	p4.add(addElapsedButton, CENTER_ALIGNMENT);
+	add(p4, CENTER_ALIGNMENT);
 
+	p5 = new Panel();
 	// enter time to add label and dropdowns
 	enterTimeLabel = new Label("Enter time to add:");
-	add(enterTimeLabel);
-	add(hours3);
-	add(minutes3);
+	p5.add(enterTimeLabel);
+	p5.add(hours3);
+	p5.add(minutes3);
 	addEnteredButton = new Button("Add Time to Total");
 	addEnteredButton.addActionListener(this);
-	add(addEnteredButton);
+	p5.add(addEnteredButton);
+	add(p5, LEFT_ALIGNMENT);
 
+	p6 = new Panel();
 	totalTimeLabel = new Label("Total time: " + totalHours);
-	add(totalTimeLabel);
+	p6.add(totalTimeLabel);
+	add(p6, CENTER_ALIGNMENT);
 
+	p7 = new Panel();
 	clearButton = new Button("Clear");
 	clearButton.addActionListener(this);
-	add(clearButton);
+	p7.add(clearButton);
+	add(p7, LEFT_ALIGNMENT);
 
 	resize(450, 250);
 
@@ -157,17 +174,20 @@ public class TimeCalculatorWindow extends Applet implements ActionListener {
 
 	if (source == addElapsedButton) {
 	    totalHours = calc.addTime(timeElapsedHours, totalHours);
+	    totalListed.append(timeElapsedHours + "+");
 	}
 
 	if (source == addEnteredButton) {
 	    enterTimeHours.setHours(Integer.parseInt(hours3.getSelectedItem()));
 	    enterTimeHours.setMinutes(Integer.parseInt(minutes3.getSelectedItem()));
 	    totalHours = calc.addTime(enterTimeHours, totalHours);
+	    totalListed.append(enterTimeHours + "+");
 	}
 
 	if (source == clearButton) {
 	    totalHours.clear();
 	    timeElapsedHours.clear();
+	    totalListed.setLength(0);
 	}
 
 	repaint();
@@ -176,6 +196,7 @@ public class TimeCalculatorWindow extends Applet implements ActionListener {
     public void paint(Graphics g) {
 	timeElapsedLabel.setText("Elapsed time: " + timeElapsedHours);
 	totalTimeLabel.setText("Total time: " + totalHours);
+	this.showStatus(totalListed.toString());
     }
 
 }
